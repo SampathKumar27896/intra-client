@@ -46,7 +46,7 @@ export function LoginForm({
         <Formik
                     initialValues={{ email: '', password: ''}}
                     validate={values => {
-                      const errors = { email: ""};
+                      const errors: Partial<TypeLoginForm> = {};
                       if (!values.email) {
                         errors.email = 'Required';
                       } else if (
@@ -57,6 +57,7 @@ export function LoginForm({
                       return errors;
                     }}
                     onSubmit={(values) => {
+                      console.log(values)
                       handleLoginSubmit(values)
                     }}
                   >
@@ -73,6 +74,7 @@ export function LoginForm({
                 <Label htmlFor="email">Email</Label>
                 <Input
                   id="email"
+                  name="email"
                   type="email"
                   placeholder="m@example.com"
                   value={values.email}
@@ -91,7 +93,7 @@ export function LoginForm({
                     Forgot your password?
                   </a>
                 </div>
-                <Input id="password" type="password"
+                <Input id="password" type="password" name="password"
                 value={values.password}
                   onChange={handleChange}
                   onBlur={handleBlur}

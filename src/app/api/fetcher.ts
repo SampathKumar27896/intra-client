@@ -4,14 +4,12 @@ type FetcherArgs<TArg> = {
   arg: TArg
 }
 
-const instance = axios.create({ baseURL: process.env.NEXT_PUBLIC_API_BASE_URI_LOCAL,  withCredentials: true, headers: { 'Content-Type': 'application/json' }});
+const instance = axios.create({ baseURL: process.env.NEXT_PUBLIC_API_BASE_URI,  withCredentials: true, headers: { 'Content-Type': 'application/json' }});
 const fetcher = async <TArg, TResponse>(
   url: string, 
   { arg }: FetcherArgs<TArg>
 ): Promise<TResponse> => {
     try {
-      //console.log("coming here", url, arg)
-         //console.log(process.env.NEXT_PUBLIC_API_BASE_URI)
     const result = await instance.post(url,{
      ...arg,
   });
@@ -33,8 +31,7 @@ const fetcher = async <TArg, TResponse>(
 }
 const dataGetter = async(url: string) => {
     try {
-      //console.log("coming here", url, arg)
-         //console.log(process.env.NEXT_PUBLIC_API_BASE_URI)
+      
          console.log("🔥 fetcher called with key:", url)
     const result = await instance.get(url);
    
