@@ -1,10 +1,14 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
+import { StoreProvider } from './providers';
+import { Toaster } from 'sonner'
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+
+const geistSans = Inter({
   subsets: ["latin"],
+  display: "swap",
+  variable: "--font-inter",
 });
 
 const geistMono = Geist_Mono({
@@ -23,12 +27,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
+    <html>
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased p-4 md:p-6 lg:p-8`}
+        >
+          <Toaster position="top-center"/>
+          <StoreProvider>
+            {children}
+          </StoreProvider>
+        </body>
     </html>
   );
 }

@@ -9,12 +9,26 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Formik } from 'formik';
+import { useRouter } from 'next/navigation';
+import useSWRMutation from 'swr/mutation';
+import fetcher from '../app/api/fetcher';
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const { trigger, data, error, isMutating, reset } = useSWRMutation('login', fetcher);
+  const router = useRouter();
+  const handleLoginSubmit = async(values, context) => {
+    
+    const result = await trigger(values);
+    if(result.status)
+      router.push('/')
+
+  }
   return (
+    
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
@@ -24,7 +38,34 @@ export function LoginForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+        <Formik
+                    initialValues={{ email: '', password: ''}}
+                    validate={values => {
+                      const errors = {};
+                      if (!values.email) {
+                        errors.email = 'Required';
+                      } else if (
+                        !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
+                      ) {
+                        errors.email = 'Invalid email address';
+                      }
+                      return errors;
+                    }}
+                    onSubmit={(values, { setSubmitting }) => {
+                      handleLoginSubmit(values, setSubmitting)
+                    }}
+                  >
+                    {({
+                 values,
+                 errors,
+                 touched,
+                 handleChange,
+                 handleBlur,
+                 handleSubmit,
+                 isSubmitting,
+                 /* and other goodies */
+               }) => (
+          <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-3">
                 <Label htmlFor="email">Email</Label>
@@ -32,6 +73,9 @@ export function LoginForm({
                   id="email"
                   type="email"
                   placeholder="m@example.com"
+                  value={values.email}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
                   required
                 />
               </div>
@@ -45,7 +89,11 @@ export function LoginForm({
                     Forgot your password?
                   </a>
                 </div>
-                <Input id="password" type="password" required />
+                <Input id="password" type="password"
+                value={values.password}
+                  onChange={handleChange}
+                  onBlur={handleBlur}
+                required />
               </div>
               <div className="flex flex-col gap-3">
                 <Button type="submit" className="w-full">
@@ -60,6 +108,8 @@ export function LoginForm({
               </a>
             </div>
           </form>
+          )}
+        </Formik>
         </CardContent>
       </Card>
     </div>
