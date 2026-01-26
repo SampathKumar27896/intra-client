@@ -1,4 +1,3 @@
-import type { Action } from "@redux/toolkit";
 import { configureStore } from "@reduxjs/toolkit";
 import counterReducer from "./createSlice";
 

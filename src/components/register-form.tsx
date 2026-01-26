@@ -39,7 +39,7 @@ export function RegisterForm({
           <Formik
             initialValues={{ userName: '', email: '', password: '' , retypePassword: ''}}
             validate={values => {
-              const errors = {};
+              const errors = {email: ""};
               if (!values.email) {
                 errors['email'] = 'Required';
               } else if (
