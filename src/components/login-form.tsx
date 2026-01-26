@@ -13,14 +13,19 @@ import { Formik } from 'formik';
 import { useRouter } from 'next/navigation';
 import useSWRMutation from 'swr/mutation';
 import fetcher from '../app/api/fetcher';
-
+import { TypeLoginForm, TypeLoginResponse } from '@/app/types';
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
-  const { trigger, data, error, isMutating, reset } = useSWRMutation('login', fetcher);
+  const { trigger } = useSWRMutation<
+    TypeLoginResponse, 
+    unknown,                
+    string,                
+    TypeLoginForm
+  >('login', fetcher);
   const router = useRouter();
-  const handleLoginSubmit = async(values, context) => {
+  const handleLoginSubmit = async(values: TypeLoginForm) => {
     
     const result = await trigger(values);
     if(result.status)
@@ -41,7 +46,7 @@ export function LoginForm({
         <Formik
                     initialValues={{ email: '', password: ''}}
                     validate={values => {
-                      const errors = {};
+                      const errors = { email: ""};
                       if (!values.email) {
                         errors.email = 'Required';
                       } else if (
@@ -51,18 +56,15 @@ export function LoginForm({
                       }
                       return errors;
                     }}
-                    onSubmit={(values, { setSubmitting }) => {
-                      handleLoginSubmit(values, setSubmitting)
+                    onSubmit={(values) => {
+                      handleLoginSubmit(values)
                     }}
                   >
                     {({
                  values,
-                 errors,
-                 touched,
                  handleChange,
                  handleBlur,
                  handleSubmit,
-                 isSubmitting,
                  /* and other goodies */
                }) => (
           <form onSubmit={handleSubmit}>

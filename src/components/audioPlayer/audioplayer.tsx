@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/componen
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
 import { Play, Pause, Music, ChevronRight, ChevronLeft, ChevronDown, ChevronUp } from "lucide-react"
-import { Track, AudioPlayerProps } from "@/app/types"
+import { Track, AudioPlayerProps, TypeGetSongResponse } from "@/app/types"
 import Image from 'next/image';
 import clsx from 'clsx';
 import {
@@ -36,7 +36,12 @@ export default function AudioPlayer({songList, upadateSongList }: AudioPlayerPro
   const [progress, setProgress] = useState(0);
   const currentTrack = useRef<Track>(defaultCurrentTrack)
   const [duration, setDuration] = useState(0)
-  const { trigger, data, error, isMutating, reset } = useSWRMutation('audio/getSong', fetcher);
+  const { trigger } = useSWRMutation<
+  TypeGetSongResponse, 
+  unknown,                
+  string,                
+  { songId: string }  
+>('audio/getSong', fetcher);
  // console.log("coming here", JSON.stringify(currentTrack.current), songList[0])
   const handleAudioSelect = async(selectedSong: Track) => {
     console.log(
@@ -74,19 +79,19 @@ export default function AudioPlayer({songList, upadateSongList }: AudioPlayerPro
       if(error instanceof DOMException && error?.name === "NotSupportedError") {
         console.log(trigger, selectedSong)
         const result = await trigger({songId: selectedSong._id});
-        if(audioRef && audioRef.current) {
-          audioRef.current.src = result.data.songUrl;
+        if(audioRef && audioRef.current && result) {
+          audioRef.current.src = result?.data.songUrl;
           audioRef.current.load()
           await audioRef.current.play();
           currentTrack.current = selectedSong;
-          upadateSongList(selectedSong._id, result.data.songUrl);
+          upadateSongList(selectedSong._id, result?.data.songUrl);
         }
       }
       setIsPlaying(!isPlaying)  
     }
     
   }
-  const handleError = (e: any) => {
+  const handleError = (e: ErrorEvent) => {
     console.log(JSON.stringify(e))
   }
   useEffect(() => {
@@ -106,7 +111,7 @@ export default function AudioPlayer({songList, upadateSongList }: AudioPlayerPro
       audio.removeEventListener("loadedmetadata", handleMetadata)
       audio.removeEventListener("error", (e) => handleError(e))
     }
-  }, [songList[0]['_id']])
+  }, [songList])
 
   return (
 
@@ -188,7 +193,7 @@ export default function AudioPlayer({songList, upadateSongList }: AudioPlayerPro
                       <ItemDescription>{track.movieName}</ItemDescription>
                     </ItemContent>
                     <ItemActions>
-                          <Button variant="ghost" className="" onClick={(e) => handleAudioSelect(track)}>
+                          <Button variant="ghost" className="" onClick={() => handleAudioSelect(track)}>
                             {isPlaying && track._id === currentTrack.current._id ? (
                               <Pause className="size-5" />
                             ) : (

@@ -9,19 +9,18 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Spinner } from "@/components/ui/spinner"
 import useSWRMutation from 'swr/mutation';
 import fetcher from '../app/api/fetcher';
-import { toast } from 'sonner';
 import { Formik } from 'formik';
 import { useRouter } from 'next/navigation';
+import { TypeRegisterForm } from '@/app/types'
 export function RegisterForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
   const router = useRouter();
-  const { trigger, data, error, isMutating, reset } = useSWRMutation('register', fetcher);
-  const handleRegisterSubmit = async(values, context) => {
+  const { trigger } = useSWRMutation('register', fetcher);
+  const handleRegisterSubmit = async(values: TypeRegisterForm) => {
     const result = await trigger(values);
     if(result)
       router.push('/login')
@@ -42,26 +41,24 @@ export function RegisterForm({
             validate={values => {
               const errors = {};
               if (!values.email) {
-                errors.email = 'Required';
+                errors['email'] = 'Required';
               } else if (
                 !/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(values.email)
               ) {
-                errors.email = 'Invalid email address';
+                errors['email'] = 'Invalid email address';
               }
               return errors;
             }}
-            onSubmit={(values, { setSubmitting }) => {
-              handleRegisterSubmit(values, setSubmitting)
+            onSubmit={(values) => {
+              handleRegisterSubmit(values)
             }}
           >
             {({
          values,
          errors,
-         touched,
          handleChange,
          handleBlur,
          handleSubmit,
-         isSubmitting,
          /* and other goodies */
        }) => (
             <form onSubmit={handleSubmit}>

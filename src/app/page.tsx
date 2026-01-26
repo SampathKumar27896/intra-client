@@ -17,13 +17,13 @@ export default function Home() {
   "updatedAt": ""
 }
   const [songList, setSongList] = useState<Track[]>([defaultTrack])
-  const { data, error, isLoading } = useSWR("audio", dataGetter);
+  const { data, isLoading } = useSWR("audio", dataGetter);
   useEffect(() => {
     if(!isLoading && data?.songList) {
       console.log("setting up data", data)
       setSongList(data?.songList);
     }
-  }, [isLoading])
+  }, [data, isLoading])
   const upadateSongList = (songId: string, fileUrl: string) => {
     const selectedSong = songList.find(song => song._id === songId);
     if(selectedSong) {
