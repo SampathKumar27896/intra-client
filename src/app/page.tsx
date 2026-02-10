@@ -37,7 +37,7 @@ export default function Home() {
     }
   }
   return (
-    <div className="bg-[url('/img/mountains.jpg')]">
+    <div>
       {!isLoading &&<AudioPlayer songList={songList} upadateSongList={upadateSongList}/>}
     </div>
   );
