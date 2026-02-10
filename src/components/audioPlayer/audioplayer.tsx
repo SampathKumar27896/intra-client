@@ -127,7 +127,7 @@ export default function AudioPlayer({songList, upadateSongList }: AudioPlayerPro
         }
         onEnded={() => setIsPlaying(false)}
       />
-       <div className={` `+clsx((!isLibraryOpen) ? `h-[50%]`: `h-40%]`)}>
+       <div className={` `+clsx((!isLibraryOpen) ? `min-h-[30%]`: `min-h-30%]`)}>
         <Card
           className={`
              border-none h-full flex flex-col gap-1`}
@@ -137,7 +137,7 @@ export default function AudioPlayer({songList, upadateSongList }: AudioPlayerPro
           </CardHeader>
           <CardContent>
             <div className="mb-5 flex flex-col justify-end">
-              {!isLibraryOpen && <Image src={currentTrack.current.albumArt || '/bg.png'} alt="album-art" width={120} height={120} className="self-center rounded-xl mb-5"/>}
+              {/* {!isLibraryOpen && <Image src={currentTrack.current.albumArt || '/bg.png'} alt="album-art" width={120} height={120} className="self-center rounded-xl mb-5"/>} */}
               <p className="text-md font-semibold mb-1">{currentTrack.current.title}</p>
               <p className="text-sm mb-10">{currentTrack.current.movieName}</p>
               <Slider
