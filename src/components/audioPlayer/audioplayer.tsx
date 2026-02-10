@@ -1,8 +1,13 @@
 import { useRef, useState, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card"
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible"
 import { Button } from "@/components/ui/button"
 import { Slider } from "@/components/ui/slider"
-import { Play, Pause, Music, ChevronRight, ChevronLeft, ChevronDown, ChevronUp } from "lucide-react"
+import { Play, Pause, Music, ChevronRight, ChevronLeft, ChevronDownIcon } from "lucide-react"
 import { Track, AudioPlayerProps, TypeGetSongResponse } from "@/app/types"
 import Image from 'next/image';
 import clsx from 'clsx';
@@ -30,7 +35,7 @@ export default function AudioPlayer({songList, upadateSongList }: AudioPlayerPro
     "createdAt": "",
     "updatedAt": ""
 }
-  const [isLibraryOpen, setIsLibraryOpen] = useState(true)
+  const [isLibraryOpen, setIsLibraryOpen] = useState(false)
   const audioRef = useRef<HTMLAudioElement>(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [progress, setProgress] = useState(0);
@@ -97,26 +102,22 @@ export default function AudioPlayer({songList, upadateSongList }: AudioPlayerPro
   useEffect(() => {
     const audio = audioRef.current
     if (!audio) return
-
     const handleMetadata = () => setDuration(audio.duration)
-
     if (audio.readyState >= 1) handleMetadata()
-    if(songList && songList.length > 0) {
-      console.log("state updated")
-      currentTrack.current = songList[0];
-    }
     audio.addEventListener("loadedmetadata", handleMetadata)
     audio.addEventListener("error", (e) => handleError(e))
     return () => {
       audio.removeEventListener("loadedmetadata", handleMetadata)
       audio.removeEventListener("error", (e) => handleError(e))
     }
-  }, [songList])
+  })
 
   return (
 
     <div
-      className='flex flex-col h-screen overflow-y-hidden gap-4'
+      className={
+        `flex flex-col h-screen overflow-y-hidden gap-4 bg-cover bg-center bg-white` 
+      }
     >
       <audio
         ref={audioRef}
@@ -126,19 +127,19 @@ export default function AudioPlayer({songList, upadateSongList }: AudioPlayerPro
         }
         onEnded={() => setIsPlaying(false)}
       />
-       <div className={clsx("",isLibraryOpen ? `basis-1/4`:`basis-3/4`)}>
+       <div className={` `+clsx((!isLibraryOpen) ? `h-[50%]`: `h-40%]`)}>
         <Card
           className={`
-             border-none shadow-none flex flex-col h-full gap-0`}
+             border-none h-full flex flex-col gap-1`}
         >
           <CardHeader>
-            <CardTitle className="text-xl">Now Playing</CardTitle>
+            <CardTitle className="text-lg">Now Playing</CardTitle>
           </CardHeader>
-          <CardContent className={clsx("",isLibraryOpen ? `basis-0`:`basis-128`)}>
-            <div className="mb-5 flex flex-col justify-end h-full">
-              {!isLibraryOpen && <Image src={currentTrack.current.albumArt} alt="album-art" width={200} height={200} className="self-center rounded-xl mb-5"/>}
-              <p className="text-2xl font-semibold mb-1">{currentTrack.current.title}</p>
-              <p className="text-xl mb-10">{currentTrack.current.movieName}</p>
+          <CardContent>
+            <div className="mb-5 flex flex-col justify-end">
+              {!isLibraryOpen && <Image src={currentTrack.current.albumArt || '/bg.png'} alt="album-art" width={120} height={120} className="self-center rounded-xl mb-5"/>}
+              <p className="text-md font-semibold mb-1">{currentTrack.current.title}</p>
+              <p className="text-sm mb-10">{currentTrack.current.movieName}</p>
               <Slider
               value={[progress]}
               max={100}
@@ -153,7 +154,7 @@ export default function AudioPlayer({songList, upadateSongList }: AudioPlayerPro
             </div>
             
           </CardContent>
-          <CardFooter className="basis-24">
+          <CardFooter>
             <div className="flex flex-row justify-items-center w-full">
                 <ChevronLeft size={24} className="basis-64" />
                 <Button variant="ghost" className="" onClick={() => handleAudioSelect(currentTrack.current)}>
@@ -169,21 +170,17 @@ export default function AudioPlayer({songList, upadateSongList }: AudioPlayerPro
           </CardFooter>
         </Card>
       </div>
-      <div className={clsx("",isLibraryOpen ? `basis-3/4`:`basis-1/4`)}>
-        <Card className='border-none'>
-          <CardHeader
-            className="cursor-pointer select-none"
-          >
-            <CardTitle className="flex items-center justify-between">
-              MP3 Library
-              <Button variant="ghost" size="icon" onClick={() => setIsLibraryOpen((prev) => !prev)}>
-               {isLibraryOpen ? <ChevronUp size={24} />: <ChevronDown size={24} />}
-              </Button>
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-              <div className="space-y-3 overflow-y-auto">
-                {songList && songList.map((track, index) => (
+      <div className={`` + clsx(!isLibraryOpen && `h-[20%]`, isLibraryOpen && `h-[60%]`)}>
+      <Collapsible className="h-full group rounded-md overflow-y-hidden ">
+        <CollapsibleTrigger asChild>
+          <Button variant="outline" className="text-md group w-full" onClick={() => setIsLibraryOpen(!isLibraryOpen)}>
+              Playlist
+              <ChevronDownIcon className="ml-auto group-data-[state=open]:rotate-180" />
+          </Button>
+          </CollapsibleTrigger>
+             <CollapsibleContent className="h-full overflow-y-scroll ">
+                <div>
+                  {songList && songList.map((track, index) => (
                   <Item key={index}>
                     <ItemMedia variant="icon">
                       <Music />
@@ -203,9 +200,9 @@ export default function AudioPlayer({songList, upadateSongList }: AudioPlayerPro
                     </ItemActions>
                   </Item>
                 ))}
-              </div>
-          </CardContent>
-        </Card>
+                 </div>
+             </CollapsibleContent>
+        </Collapsible>
       </div>
     </div>
   )
