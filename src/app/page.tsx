@@ -6,17 +6,8 @@ import { dataGetter } from "./api/fetcher";
 import { Track } from "@/app/types"
 
 export default function Home() {
-  const defaultTrack: Track = {
-  "_id": "",
-  "title": "",
-  "movieName": "",
-  "fileName": "",
-  "fileUrl": "",
-  "albumArt": "",
-  "createdAt": "",
-  "updatedAt": ""
-}
-  const [songList, setSongList] = useState<Track[]>([defaultTrack])
+  
+  const [songList, setSongList] = useState<Track[]>([])
   const { data, isLoading } = useSWR("audio", dataGetter);
   useEffect(() => {
     if(!isLoading && data?.songList) {
@@ -38,7 +29,7 @@ export default function Home() {
   }
   return (
     <div>
-      {!isLoading &&<AudioPlayer songList={songList} upadateSongList={upadateSongList}/>}
+      {!isLoading && songList?.length > 0 && <AudioPlayer songList={songList} upadateSongList={upadateSongList}/>}
     </div>
   );
 }

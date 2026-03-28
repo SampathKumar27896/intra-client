@@ -9,7 +9,7 @@ export type Track = {
   updatedAt: string
 }
 export type AudioPlayerProps = {
-  songList?: Track[]
+  songList: Track[]
   upadateSongList: (songId: string, fileUrl: string) => void;
 }
 
