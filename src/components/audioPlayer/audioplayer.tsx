@@ -17,10 +17,11 @@ import {
   Play,
   Pause,
   Music,
-  ChevronRight,
-  ChevronLeft,
+  StepForward,
+  StepBack,
   ChevronDownIcon,
 } from "lucide-react";
+
 import { Track, AudioPlayerProps, TypeGetSongResponse } from "@/app/types";
 import Image from "next/image";
 import clsx from "clsx";
@@ -145,9 +146,9 @@ export default function AudioPlayer({
           "min-h-[60%]": !isLibraryOpen,
         })}
       >
-        <Card className={`border-none h-full flex flex-col gap-1 rounded-none`}>
+        <Card className={`border-none h-full flex flex-col gap-1`}>
           <CardHeader>
-            <CardTitle className="text-lg tracking-tighter text-center uppercase text-xl">
+            <CardTitle className="text-lg  text-center tracking-widest uppercase text-xl">
               Now Playing
             </CardTitle>
           </CardHeader>
@@ -157,8 +158,8 @@ export default function AudioPlayer({
                 <Image
                   src={currentTrack.albumArt || "/bg.png"}
                   alt="album-art"
-                  width={360}
-                  height={360}
+                  width={300}
+                  height={300}
                   className="self-center rounded-xl mb-5"
                 />
               )}
@@ -194,16 +195,25 @@ export default function AudioPlayer({
             </div>
           </CardContent>
           <CardFooter>
-            <div className="flex flex-row justify-items-center w-full">
-              <ChevronLeft size={24} className="basis-64" />
+            <div className="flex flex-row justify-around w-full">
               <Button
+                className="size-[5rem] rounded-full"
                 variant="ghost"
-                className=""
+              >
+              <StepBack size={24} className="size-8" />
+              </Button>
+              <Button
+                className="size-[5rem] rounded-full"
                 onClick={() => handleButtonClick(currentTrack)}
               >
                 {button}
               </Button>
-              <ChevronRight size={24} className="basis-64" />
+              <Button
+                className="size-[5rem] rounded-full"
+                variant="ghost"
+              >
+              <StepForward size={24} className="size-8" />
+              </Button>
             </div>
           </CardFooter>
         </Card>
@@ -222,9 +232,9 @@ export default function AudioPlayer({
             <Button
               variant="outline"
               size="lg"
-              className="text-md group w-full h-22 border-none bg-transparent shadow-none bg-card"
+              className="text-md group w-full h-22 border-none bg-transparent shadow-none text-xl bg-card"
             >
-              Playlist
+              PLAYLIST
               <ChevronDownIcon className="ml-auto group-data-[state=open]:rotate-180" />
             </Button>
           </CollapsibleTrigger>
@@ -232,7 +242,10 @@ export default function AudioPlayer({
             <div>
               {songList &&
                 songList.map((track, index) => (
-                  <Item key={index} onClick={() => handleButtonClick(track)}>
+                  <Item key={index} onClick={() => handleButtonClick(track)} 
+                  className={clsx(
+                      track._id === currentTrack?._id && "bg-accent"
+                  )}>
                     <ItemMedia variant="icon">
                       <Music />
                     </ItemMedia>
