@@ -37,8 +37,8 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle>Login to your account</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-lg font-bold">Login to your account</CardTitle>
+          <CardDescription className="text-sm">
             Enter your email below to login to your account
           </CardDescription>
         </CardHeader>
@@ -71,7 +71,7 @@ export function LoginForm({
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-3">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" className="text-md">Email</Label>
                 <Input
                   id="email"
                   name="email"
@@ -81,14 +81,15 @@ export function LoginForm({
                   onChange={handleChange}
                   onBlur={handleBlur}
                   required
+                  className="h-12 text-md"
                 />
               </div>
               <div className="grid gap-3">
                 <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password" className="text-md">Password</Label>
                   <a
                     href="#"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+                    className="ml-auto inline-block text-xs underline-offset-4 hover:underline"
                   >
                     Forgot your password?
                   </a>
@@ -97,17 +98,18 @@ export function LoginForm({
                 value={values.password}
                   onChange={handleChange}
                   onBlur={handleBlur}
+                  className="h-12 text-md"
                 required />
               </div>
               <div className="flex flex-col gap-3">
-                <Button type="submit" className="w-full">
+                <Button type="submit" className="w-full h-12 text-md">
                   Login
                 </Button>
               </div>
             </div>
-            <div className="mt-4 text-center text-sm">
+            <div className="mt-4 text-center text-xs">
               Don&apos;t have an account?{" "}
-              <a href="/register" className="underline underline-offset-4">
+              <a href="/register" className="underline underline-offset-4 text-md">
                 Sign up
               </a>
             </div>

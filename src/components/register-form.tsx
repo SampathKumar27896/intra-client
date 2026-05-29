@@ -30,8 +30,8 @@ export function RegisterForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle>Create your account</CardTitle>
-          <CardDescription>
+          <CardTitle className="text-lg font-bold">Create your account</CardTitle>
+          <CardDescription className="text-sm">
             Enter your details
           </CardDescription>
         </CardHeader>
@@ -64,7 +64,7 @@ export function RegisterForm({
             <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6">
              <div className="grid gap-3">
-              <Label htmlFor="userName">User name</Label>
+              <Label htmlFor="userName" className="text-md">User name</Label>
                 <Input
                   id="userName"
                   name="userName"
@@ -74,10 +74,11 @@ export function RegisterForm({
                   onChange={handleChange}
                   onBlur={handleBlur}
                   required
+                  className="h-12 text-md"
                 />
               </div>
               <div className="grid gap-3">
-                <Label htmlFor="email">Email {errors.email}</Label>
+                <Label htmlFor="email" className="text-md">Email {errors.email}</Label>
                 <Input
                   id="email"
                   name="email"
@@ -87,10 +88,11 @@ export function RegisterForm({
                   onChange={handleChange}
                   onBlur={handleBlur}
                   required
+                  className="h-12 text-md"
                 />
               </div>
               <div className="grid gap-3">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-md">Password</Label>
                 <Input
                   id="password"
                   name="password"
@@ -99,10 +101,11 @@ export function RegisterForm({
                   onChange={handleChange}
                   onBlur={handleBlur}
                   required
+                  className="h-12 text-md"
                 />
               </div>
               <div className="grid gap-3">
-              <Label htmlFor="retypePassword">Retype Password</Label>
+              <Label htmlFor="retypePassword" className="text-md">Retype Password</Label>
                 <Input
                   id="retypePassword"
                   name="retypePassword"
@@ -111,20 +114,21 @@ export function RegisterForm({
                   onChange={handleChange}
                   onBlur={handleBlur}
                   required
+                  className="h-12 text-md"
                 />
               </div>
               <div className="flex flex-col gap-3">
-                <Button type="submit" className="w-full">
-                 Submit
+                <Button type="submit" className="w-full text-md">
+                 Register
                 </Button>
               </div>
             </div>
             </form>
             )}
             </Formik>
-            <div className="mt-4 text-center text-sm">
+            <div className="mt-4 text-center text-xs">
               Already have an account?{" "}
-              <a href="/login" className="underline underline-offset-4">
+              <a href="/login" className="underline underline-offset-4 text-md">
                 Login
               </a>
             </div>
