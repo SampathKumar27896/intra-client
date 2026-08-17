@@ -29,7 +29,7 @@ export function LoginForm({
     
     const result = await trigger(values);
     if(result.status)
-      router.push('/')
+      router.push('/home')
 
   }
   return (
