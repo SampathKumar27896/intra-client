@@ -46,7 +46,7 @@ export function NavigationMenuDemo() {
                     const isActive = pathName === item.href;
                     const icon = isActive ? item.iconSelected : item.icon;
                     return(
-                        <Link href={item.href} className="text-xs">
+                        <Link href={item.href} className="text-xs" key={index}>
                             <div className={`flex flex-col gap-2 items-center w-15 pt-1 rounded-md
                                 ${
                                     isActive ? "text-primary": "text-muted-foreground hover:text-foreground"
