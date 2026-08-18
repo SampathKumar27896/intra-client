@@ -4,7 +4,7 @@ type FetcherArgs<TArg> = {
   arg: TArg
 }
 
-const instance = axios.create({ baseURL: process.env.NEXT_PUBLIC_API_BASE_URI,  withCredentials: true, headers: { 'Content-Type': 'application/json' }});
+const instance = axios.create({ baseURL: process.env.NEXT_PUBLIC_INTERNAL_API_BASE_URI,  withCredentials: true, headers: { 'Content-Type': 'application/json' }});
 const fetcher = async <TArg, TResponse>(
   url: string, 
   { arg }: FetcherArgs<TArg>
