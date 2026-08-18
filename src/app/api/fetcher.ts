@@ -10,9 +10,18 @@ const fetcher = async <TArg, TResponse>(
   { arg }: FetcherArgs<TArg>
 ): Promise<TResponse> => {
     try {
-    const result = await instance.post(url,{
-     ...arg,
-  });
+      let result;
+      if(url === 'login') {
+            result = await axios.post('/api/auth/login', {
+            ...arg,
+          },{
+            headers: { 'Content-Type': 'application/json' },
+          });
+      } else {
+        result = await instance.post(url,{
+        ...arg,
+        });
+    }
     toast(result.data.message);
     return result.data;
     }catch(error: unknown) {
