@@ -5,7 +5,8 @@ export async function POST(request: Request) {
   try {
     const body = await request.json();
     // Send credentials to NestJS backend
-    const backendRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URI}login`, {
+    console.log(body, request)
+    const backendRes = await fetch(`${process.env.BACKEND_API_BASE_URI}login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
