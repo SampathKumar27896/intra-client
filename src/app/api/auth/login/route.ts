@@ -4,9 +4,8 @@ import { cookies } from 'next/headers';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-
     // Send credentials to NestJS backend
-    const backendRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URI}/login`, {
+    const backendRes = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URI}login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
@@ -28,7 +27,7 @@ export async function POST(request: Request) {
       const cookieStore = await cookies();
       cookieStore.set('jwt', token, {
         httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
+        secure: true,
         sameSite: 'none',
         path: '/',
         maxAge: 60 * 60 * 1000,
