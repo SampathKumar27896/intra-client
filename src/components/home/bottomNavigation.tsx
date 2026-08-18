@@ -5,7 +5,7 @@ import Link from "next/link"
 import {
   Card,
 } from "@/components/ui/card";
-import { House, LibraryBig, Music, UsersRound } from 'lucide-react';
+import { House, Disc3 } from 'lucide-react';
 import { usePathname } from 'next/navigation';
 
 export function NavigationMenuDemo() {
@@ -14,31 +14,19 @@ export function NavigationMenuDemo() {
     {
         title: "Home",
         href: "/home",
-        icon: <House/>,
-        iconSelected: <House strokeWidth={4}/>
+        icon: (<div className="text-secondary"><House/></div>),
+        iconSelected: (<div className="text-primary"><House fill={"#ffff"} /></div>)
     },
     {
-        title: "Collection",
-        href: "/collection",
-        icon: <LibraryBig/>,
-        iconSelected: <LibraryBig strokeWidth={4}/>
-    },
-    {
-        title: "Songs",
-        href: "/songs",
-        icon: <Music/>,
-        iconSelected: <Music strokeWidth={4}/>
-    },
-    {
-        title: "Artists",
-        href: "/artists",
-        icon: <UsersRound/>,
-        iconSelected: <UsersRound strokeWidth={4}/>
+        title: "Player",
+        href: "/player",
+        icon: (<div className="text-secondary"><Disc3/></div>),
+        iconSelected: (<div className="text-primary"><Disc3 fill={"#ffff"}/></div>)
     }
   ]
   return (
     <div className="fixed bottom-4 inset-x-4">
-    <Card className="p-2 shadow-none">
+    <Card className="p-2 shadow-none bg-primary">
         <div className="flex flex-row gap-2 justify-around ">
             {
                 navigationItems.map((item, index) => {
@@ -47,11 +35,7 @@ export function NavigationMenuDemo() {
                     const icon = isActive ? item.iconSelected : item.icon;
                     return(
                         <Link href={item.href} className="text-xs" key={index}>
-                            <div className={`flex flex-col gap-2 items-center w-15 pt-1 rounded-md
-                                ${
-                                    isActive ? "text-primary": "text-muted-foreground hover:text-foreground"
-                                }
-                            `} key={index}>
+                            <div className={`flex flex-col gap-2 items-center w-15 pt-1 rounded-md text-secondary`} key={index}>
                                 {icon}
                                 {item.title}
                             </div>
@@ -59,22 +43,6 @@ export function NavigationMenuDemo() {
                     )
                 })
             }
-            {/* <div className="flex flex-col gap-2 items-center">
-                <House/>
-                <Link href="/home" className="text-xs">Home</Link>
-            </div>
-            <div className="flex flex-col gap-2 items-center">
-                <LibraryBig/>
-                <Link href="/home" className="text-xs">Collection</Link>
-            </div>
-            <div className="flex flex-col gap-2 items-center">
-                <Music/>
-                <Link href="/home" className="text-xs">Songs</Link>
-            </div>
-            <div className="flex flex-col gap-2 items-center">
-                <UsersRound/>
-                <Link href="/home" className="text-xs">Artists</Link>
-            </div> */}
         </div>
     </Card>
 </div>
