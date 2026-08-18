@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
+import { Suspense } from "react"
 import { Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { StoreProvider } from './providers';
 import { Toaster } from 'sonner'
-
+import Loading from './loading';
 
 const geistSans = Inter({
   subsets: ["latin"],
@@ -33,8 +34,11 @@ export default function RootLayout({
         >
           <Toaster position="top-center"/>
           <StoreProvider>
+          <Suspense fallback={<Loading/>}>
             {children}
+          </Suspense>
           </StoreProvider>
+          
         </body>
     </html>
   );
