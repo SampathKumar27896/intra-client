@@ -6,7 +6,7 @@ export async function POST(request: Request) {
     const body = await request.json();
     // Send credentials to NestJS backend
     console.log(body, request)
-    const backendRes = await fetch(`${process.env.BACKEND_API_BASE_URI}login`, {
+    const backendRes = await fetch(`${process.env.BACKEND_API_BASE_URI}/api/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
@@ -22,14 +22,13 @@ export async function POST(request: Request) {
     }
 
     const token = data.data?.token;
-
     // Set HTTP-only cookie on intra-client.vercel.app
     if (token) {
       const cookieStore = await cookies();
       cookieStore.set('jwt', token, {
         httpOnly: true,
-        secure: true,
-        sameSite: 'none',
+        secure: process.env.NODE_ENV === 'production' ? true : false,
+        sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
         path: '/',
         maxAge: 60 * 60 * 1000,
       });
