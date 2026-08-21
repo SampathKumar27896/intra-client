@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { Suspense } from "react"
 import { Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
-import { StoreProvider } from './providers';
 import { Toaster } from 'sonner'
 import Loading from './loading';
 
@@ -30,14 +29,12 @@ export default function RootLayout({
   return (
     <html>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased md:p-6 lg:p-8`}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased md:p-6 lg:p-8 mb-[10rem]`}
         >
           <Toaster position="top-center"/>
-          <StoreProvider>
           <Suspense fallback={<Loading/>}>
             {children}
           </Suspense>
-          </StoreProvider>
           
         </body>
     </html>

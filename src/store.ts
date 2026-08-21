@@ -1,12 +1,22 @@
-import { configureStore } from "@reduxjs/toolkit";
-import counterReducer from "./createSlice";
+import { create } from 'zustand'
 
-export const store = configureStore({
-    reducer: {
-        counter: counterReducer,
-    }
-})
+const useAudioStore = create((set) => ({
+    onLoadedMetadata: () => {},
+    onTimeUpdate: () => {},
+    handleAction: () => {},
+    ref: null,
+    currentTime: 0,
+    currentTrack: null,
+    duration: 0,
+    isPlaying: false,
+    setMetaDataFunction: (func) => set((state) => ({ ...state, onLoadedMetadata: func })),
+    setTimeupdateFunction: (func) => set((state) => ({ ...state, onTimeUpdate: func })),
+    setAudioRef: (audioRef) => set((state) => ({ ...state, ref: audioRef })),
+    setCurrentTime: (time) => set((state) => ({ ...state, currentTime: time })),
+    setCurrentTrack: (track) => set((state) => ({...state, currentTrack: track})),
+    setDuration: (duration) => set((state) => ({...state, duration: duration})),
+    setIsPlaying: (value) => set((state) => ({...state, isPlaying: value})),
+    setHandleAction: (func) => set((state) => ({...state, handleAction: func}))
+}))
 
-export type AppStore = typeof store;
-export type RootState = ReturnType<AppStore["getState"]>;
-export type AppDispatch = AppStore["dispatch"];
+export default useAudioStore;
