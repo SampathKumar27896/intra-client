@@ -1,9 +1,34 @@
+import { Ref } from 'react';
 import { create } from 'zustand'
+import { Track } from './app/types';
+export interface AudioStore {
+  // State Values
+  ref: Ref<HTMLAudioElement> | null;
+  currentTime: number;
+  currentTrack: Track | null;
+  duration: number;
+  isPlaying: boolean;
 
-const useAudioStore = create((set) => ({
+  // Callback Functions
+  onLoadedMetadata: () => void;
+  onTimeUpdate: () => void;
+  handleAction: (track: Track) => Promise<boolean>;
+
+  // Setter Actions
+  setMetaDataFunction: (func: () => void) => void;
+  setTimeupdateFunction: (func: () => void) => void;
+  setAudioRef: (audioRef: Ref<HTMLAudioElement> | undefined) => void;
+  setCurrentTime: (time: number) => void;
+  setCurrentTrack: (track: Track | null) => void;
+  setDuration: (duration: number) => void;
+  setIsPlaying: (value: boolean) => void;
+  setHandleAction: (func: (track: Track) => Promise<boolean>) => void;
+}
+
+const useAudioStore = create<AudioStore>((set) => ({
     onLoadedMetadata: () => {},
     onTimeUpdate: () => {},
-    handleAction: () => {},
+    handleAction: () => Promise.resolve(true),
     ref: null,
     currentTime: 0,
     currentTrack: null,

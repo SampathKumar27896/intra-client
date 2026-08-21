@@ -68,23 +68,34 @@ export default function AudioPlayer({
 
  
   
-  async function handleButtonClick(track: Track) {
-    
-    if (track !== currentTrack) setCurrentTrack(track);
-    const result = await handleAction(track);
-    if(result) {
-      updateButton(track)
-    } else {
-      const result = await trigger({ songId: track._id });
-      if(audioRef.current) {
-        await handleAction({fileUrl: result?.data.songUrl});
-        upadateSongList(track._id, result?.data.songUrl);
-      }
+  async function handleButtonClick(track: Track | null) {
+    if(track) {
+         if (track !== currentTrack) setCurrentTrack(track);
+        const result = await handleAction(track);
+        if(result) {
+          updateButton(track)
+        } else {
+          const result = await trigger({ songId: track._id });
+          if(audioRef.current) {
+            const updatedAudioUrl = {
+              _id: "",
+              movieName: "",
+              title:"",
+              fileName: "",
+              albumArt: "",
+              fileUrl: result?.data.songUrl,
+              createdAt: "",
+              updatedAt: ""
+            }
+            await handleAction(updatedAudioUrl);
+            upadateSongList(track._id, result?.data.songUrl);
+          }
+        }
     }
   }
   function updateButton(track: Track) {
     let currentButton;
-    if (currentTrack._id === track._id) {
+    if (currentTrack && currentTrack._id === track._id) {
       currentButton = !isPlaying ? (
         <Pause className="size-6" />
       ) : (
@@ -125,7 +136,7 @@ export default function AudioPlayer({
             <div className="mb-5 flex flex-col justify-end">
               {!isLibraryOpen && (
                 <Image
-                  src={currentTrack.albumArt || "/bg.png"}
+                  src={currentTrack && currentTrack.albumArt || "/bg.png"}
                   alt="album-art"
                   width={300}
                   height={300}
@@ -133,7 +144,7 @@ export default function AudioPlayer({
                 />
               )}
               <p className="text-md font-semibold mb-1 text-2xl">
-                {currentTrack.title}
+                {currentTrack &&  currentTrack.title}
               </p>
               <p className="text-sm mb-10">{}</p>
               <div className="mb-5 flex flex-row justify-between">
@@ -208,7 +219,7 @@ export default function AudioPlayer({
                     </ItemContent>
                     <ItemActions>
                       <Button variant="ghost" className="">
-                        {track._id === currentTrack._id ? (
+                        {currentTrack &&  track._id === currentTrack._id ? (
                           button
                         ) : (
                           <Play className="size-6" />
