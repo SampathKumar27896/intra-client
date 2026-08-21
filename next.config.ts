@@ -13,7 +13,8 @@ const nextConfig: NextConfig = {
       }
     ],
   },
-  allowedDevOrigins: ["app.sam.com", "192.168.1.8"]
+  allowedDevOrigins: ["app.sam.com", "192.168.1.8"],
+  reactStrictMode: false,
 };
 
 export default nextConfig;

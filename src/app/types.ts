@@ -10,7 +10,6 @@ export type Track = {
 }
 export type AudioPlayerProps = {
   songList: Track[]
-  upadateSongList: (songId: string, fileUrl: string) => void;
 }
 
 export type TypeLoginForm = {

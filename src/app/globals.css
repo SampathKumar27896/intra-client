@@ -200,3 +200,22 @@
     scrollbar-width: none;  /* Firefox */
   }
 }
+
+@keyframes equalizer {
+  0% {
+    transform: scaleY(0.3);
+  }
+
+  30% {
+    transform: scaleY(0.4);
+  }
+
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+.animate-equalizer {
+  animation: equalizer 0.6s ease-in-out infinite;
+  transform-origin: center;
+}
