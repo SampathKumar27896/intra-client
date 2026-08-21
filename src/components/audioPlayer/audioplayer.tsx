@@ -73,7 +73,7 @@ export default function AudioPlayer() {
   
   async function updateTrack(index: number) {
        const newIndex =  ((index) % songList.length)
-       let chosenTrack = songList[newIndex];
+       const chosenTrack = songList[newIndex];
       if(chosenTrack) {
          if (chosenTrack !== currentTrack) setCurrentTrack(chosenTrack);
         const result = await handleAction(chosenTrack);
