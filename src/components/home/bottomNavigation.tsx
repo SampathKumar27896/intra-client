@@ -25,9 +25,9 @@ export function NavigationMenuDemo() {
     }
   ]
   return (
-    <div className="fixed bottom-4 inset-x-4">
-    <Card className="p-2 shadow-none bg-primary">
-        <div className="flex flex-row gap-2 justify-around ">
+    <div>
+    <Card className="p-2 shadow-none bg-primary rounded-none border-none">
+        <div className="flex flex-row gap-2 justify-around">
             {
                 navigationItems.map((item, index) => {
                     

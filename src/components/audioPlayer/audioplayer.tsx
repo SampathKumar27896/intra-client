@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState, useEffect } from "react";
 import {
   Card,
   CardContent,
@@ -12,7 +12,6 @@ import {
   CollapsibleTrigger,
 } from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
-import { Slider } from "@/components/ui/slider";
 import {
   Play,
   Pause,
@@ -34,92 +33,66 @@ import {
   ItemTitle,
 } from "@/components/ui/item";
 import useSWRMutation from "swr/mutation";
+import useAudioElement from './useAudioElementHook'
 import fetcher from "@/app/api/fetcher";
+import useAudioStore from '../../store';
+import AudioSlider from './audioSlider';
+
+
 
 export default function AudioPlayer({
   songList,
   upadateSongList,
 }: AudioPlayerProps) {
-  const [currentTrack, setCurrentTrack] = useState(songList[0]);
-  const [isPlay, setIsPlay] = useState(false);
-  const audioRef = useRef<HTMLAudioElement>(null);
-  const [duration, setDuration] = useState(0);
-  const [currentTime, setCurrentTime] = useState(0);
-  const [isSeeking, setIsSeeking] = useState(false);
-  const [seekValue, setSeekValue] = useState(0);
+  const currentTime = useAudioStore((state) => state.currentTime);
+  
+  const currentTrack = useAudioStore((state) => state.currentTrack);
+  const setCurrentTrack = useAudioStore((state) => state.setCurrentTrack);
+  const duration = useAudioStore((state) => state.duration);
+  const isPlaying = useAudioStore((state) => state.isPlaying);
+  const handleAction = useAudioStore((state) => state.handleAction);
   const [isLibraryOpen, setIsLibraryOpen] = useState(false);
-  const [button, setButton] = useState(<Play className="size-6" />);
+  const [button, setButton] = useState(!isPlaying ? <Play className="size-6" />: <Pause className="size-6" />);
   const { trigger } = useSWRMutation<
     TypeGetSongResponse,
     unknown,
     string,
     { songId: string }
   >("audio/getSong", fetcher);
-  function onLoadMetaData() {
-    const audio = audioRef.current;
-    if (!audio) return;
-    setDuration(audio.duration);
-  }
+  
+  const {
+   
+    audioRef
+  } = useAudioElement(); 
+   
 
-  function handleTimeUpdate() {
-    const audio = audioRef.current;
-    if (!audio) return;
-    if (isSeeking) return;
-    setCurrentTime(audio.currentTime);
-  }
-
-  function handleSliderChange(val: number[]) {
-    const audio = audioRef.current;
-    if (!audio) return;
-    setSeekValue(val[0]);
-    //audio.currentTime = time;
-    //setCurrentTime(time);
-  }
+ 
+  
   async function handleButtonClick(track: Track) {
+    
     if (track !== currentTrack) setCurrentTrack(track);
-    if (audioRef.current) {
-      try {
-        if (audioRef.current.src === track.fileUrl) {
-          if (!audioRef.current.paused) {
-            audioRef.current.pause();
-            setIsPlay(false);
-          } else {
-            await audioRef.current.play();
-            setIsPlay(true);
-          }
-        }
-        if (audioRef.current.src !== track.fileUrl) {
-          audioRef.current.src = track.fileUrl;
-          await audioRef.current.play();
-          setIsPlay(true);
-        }
-        updateButton(track);
-      } catch (error) {
-        console.log(error);
-        if (
-          error instanceof DOMException &&
-          error.name === "NotSupportedError"
-        ) {
-          const result = await trigger({ songId: track._id });
-          audioRef.current.src = result?.data.songUrl;
-          await audioRef.current.play();
-          upadateSongList(track._id, result?.data.songUrl);
-          setIsPlay(!isPlay);
-        }
+    const result = await handleAction(track);
+    if(result) {
+      updateButton(track)
+    } else {
+      const result = await trigger({ songId: track._id });
+      if(audioRef.current) {
+        await handleAction({fileUrl: result?.data.songUrl});
+        upadateSongList(track._id, result?.data.songUrl);
       }
-      updateButton(track);
     }
   }
   function updateButton(track: Track) {
-    console.log("Comparing here for button", currentTrack, track, isPlay);
     let currentButton;
     if (currentTrack._id === track._id) {
-      currentButton = !isPlay ? (
+      currentButton = !isPlaying ? (
         <Pause className="size-6" />
       ) : (
         <Play className="size-6" />
       );
-    } else currentButton = <Pause className="size-6" />;
+    } else {
+      currentButton = <Pause className="size-6" />;
+    };
     setButton(currentButton);
   }
   function formatTime(time: number) {
@@ -134,12 +107,8 @@ export default function AudioPlayer({
     <div
       className={`flex flex-col h-screen overflow-y-hidden  bg-cover bg-center bg-white`}
     >
-      <audio
-        ref={audioRef}
-        onLoadedMetadata={onLoadMetaData}
-        onTimeUpdate={handleTimeUpdate}
-        preload="metadata"
-      />
+      
+     
       <div
         className={clsx({
           "min-h-[30%]": isLibraryOpen,
@@ -171,26 +140,10 @@ export default function AudioPlayer({
                 <p className="text-lg font-medium">{formatTime(currentTime)}</p>
                 <p className="text-lg font-medium">{formatTime(duration)}</p>
               </div>
-              <Slider
-                value={[isSeeking ? seekValue : currentTime]}
-                max={duration || 0}
-                min={0}
-                onValueChange={(val) => {
-                  setIsSeeking(true);
-                  handleSliderChange(val);
-                }}
-                onValueCommit={(val) => {
-                  const audio = audioRef.current;
-                  if (!audio) return;
-
-                  const time = val[0];
-
-                  audio.currentTime = time;
-                  setCurrentTime(time);
-
-                  setIsSeeking(false);
-                }}
-                className=""
+              <AudioSlider 
+                duration={duration}
+                audioRef={audioRef}
+                currentTime={currentTime}
               />
             </div>
           </CardContent>
