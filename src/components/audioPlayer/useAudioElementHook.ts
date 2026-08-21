@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import useAudioStore from '../../store';
+import { Track } from '../../app/types';
 
 function useAudioElement() {
     const audioRef = useRef<HTMLAudioElement>(null);
@@ -37,7 +38,7 @@ function useAudioElement() {
         updateCurrentTime(audio.currentTime);
     }
 
-    const handleAction = async (track) => {
+    const handleAction = async (track: Track) => {
 
         if (audioRef.current) {
             try {
@@ -68,6 +69,7 @@ function useAudioElement() {
             }
             return true;
         }
+        return false;
     }
     useEffect(() => {
         setHandleAction(handleAction);
