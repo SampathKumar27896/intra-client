@@ -5,39 +5,30 @@ import useSWR from "swr";
 import { dataGetter } from "../../api/fetcher";
 import { Track } from "@/app/types"
 import useAudioStore from '../../../store';
-
+import useSWRImmutable from 'swr/immutable';
 export default function Player() {
   const currentTrack = useAudioStore((state) => state.currentTrack);
   const setCurrentTrack = useAudioStore((state) => state.setCurrentTrack);
-  const [songList, setSongList] = useState<Track[]>([])
-  const { data, isLoading } = useSWR("audio", dataGetter);
+  const storeSongList = useAudioStore((state) => state.storeSongList);
+  const setStoreSongList = useAudioStore((state) => state.setStoreSongList);
+  //const [songList, setSongList] = useState<Track[]>([])
+  const shouldFetch = !storeSongList || storeSongList.length === 0;
+  const { data, isLoading } = useSWRImmutable(shouldFetch ? "audio" : null, dataGetter);
   useEffect(() => {
     if(!isLoading && data?.songList) {
       console.log("setting up data", data)
-      setSongList(data?.songList);
+      setStoreSongList(data?.songList);
       if(!currentTrack) {
         setCurrentTrack(data?.songList[0])
       } else {
         console.log("current track already there")
       }
-      
     }
-  }, [data, isLoading])
-  const upadateSongList = (songId: string, fileUrl: string) => {
-    const selectedSong = songList.find(song => song._id === songId);
-    if(selectedSong) {
-      selectedSong.fileUrl = fileUrl;
-      const updatedSongList = songList.map(song =>
-      song._id === selectedSong._id
-        ? { ...song, ...selectedSong }
-        : song
-      )
-      setSongList(updatedSongList);
-    }
-  }
+  }, [data?.songList, isLoading])
+  
   return (
     <div>
-      {!isLoading && songList?.length > 0 && <AudioPlayer songList={songList} upadateSongList={upadateSongList}/>}
+      {!isLoading && storeSongList?.length > 0 && <AudioPlayer/>}
     </div>
   );
 }

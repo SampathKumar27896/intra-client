@@ -6,53 +6,43 @@ import {
   CardTitle,
   CardFooter,
 } from "@/components/ui/card";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@/components/ui/collapsible";
 import { Button } from "@/components/ui/button";
 import {
   Play,
   Pause,
   Music,
-  StepForward,
-  StepBack,
-  ChevronDownIcon,
+  SkipForward,
+  SkipBack,
 } from "lucide-react";
 
 import { Track, AudioPlayerProps, TypeGetSongResponse } from "@/app/types";
 import Image from "next/image";
-import clsx from "clsx";
-import {
-  Item,
-  ItemActions,
-  ItemContent,
-  ItemDescription,
-  ItemMedia,
-  ItemTitle,
-} from "@/components/ui/item";
+import { toast } from 'sonner';
+
 import useSWRMutation from "swr/mutation";
 import useAudioElement from './useAudioElementHook'
 import fetcher from "@/app/api/fetcher";
 import useAudioStore from '../../store';
 import AudioSlider from './audioSlider';
+import AudioPlaylist from './audioPlaylist'
+import { useRouter } from 'next/navigation'
 
-
-
-export default function AudioPlayer({
-  songList,
-  upadateSongList,
-}: AudioPlayerProps) {
+export default function AudioPlayer() {
   const currentTime = useAudioStore((state) => state.currentTime);
-  
   const currentTrack = useAudioStore((state) => state.currentTrack);
   const setCurrentTrack = useAudioStore((state) => state.setCurrentTrack);
   const duration = useAudioStore((state) => state.duration);
   const isPlaying = useAudioStore((state) => state.isPlaying);
   const handleAction = useAudioStore((state) => state.handleAction);
-  const [isLibraryOpen, setIsLibraryOpen] = useState(false);
-  const [button, setButton] = useState(!isPlaying ? <Play className="size-6" />: <Pause className="size-6" />);
+  const currentSongIndex = useAudioStore((state) => state.currentSongIndex);
+  const setCurrentSongIndex = useAudioStore((state) => state.setCurrentSongIndex);
+  const songList = useAudioStore((state) => state.storeSongList);
+  const playButton = <Play  fill="#fff" className="size-8"/>;
+  const pauseButton = <Pause  size={28} fill="#fff" className="size-8"/>;
+  const skipForwardButton = <SkipForward size={28}  fill="#000" className="size-8"/>;
+  const skipBackButton =  <SkipBack size={28} fill="#000" className="size-8" />
+  const [button, setButton] = useState(!isPlaying ? playButton: pauseButton);
+  console.log("songl  list",songList)
   const { trigger } = useSWRMutation<
     TypeGetSongResponse,
     unknown,
@@ -66,43 +56,54 @@ export default function AudioPlayer({
   } = useAudioElement(); 
    
 
- 
+ const handleNext = () => {
+    if (!songList || songList.length === 0) return;
+    const newIndex = ((currentSongIndex + 1) % songList.length);
+    setCurrentSongIndex(newIndex);
+  };
+
+  // Play Previous Song (loops to end if at the start)
+  const handlePrev = () => {
+    if (!songList || songList.length === 0) return;
+    const newIndex =  currentSongIndex === 0 ? songList.length - 1 : currentSongIndex - 1
+    setCurrentSongIndex(
+      newIndex
+    );
+  };
   
-  async function handleButtonClick(track: Track | null) {
-    if(track) {
-         if (track !== currentTrack) setCurrentTrack(track);
-        const result = await handleAction(track);
-        if(result) {
-          updateButton(track)
-        } else {
-          const result = await trigger({ songId: track._id });
-          if(audioRef.current) {
-            const updatedAudioUrl = {
-              _id: "",
-              movieName: "",
-              title:"",
-              fileName: "",
-              albumArt: "",
-              fileUrl: result?.data.songUrl,
-              createdAt: "",
-              updatedAt: ""
-            }
-            await handleAction(updatedAudioUrl);
-            upadateSongList(track._id, result?.data.songUrl);
-          }
+  async function updateTrack(index: number) {
+       const newIndex =  ((index) % songList.length)
+       let chosenTrack = songList[newIndex];
+      if(chosenTrack) {
+         if (chosenTrack !== currentTrack) setCurrentTrack(chosenTrack);
+        const result = await handleAction(chosenTrack);
+        if(!result) {
+          await trigger({ songId: chosenTrack._id });
+          toast("Something went wrong while playing the song, refreshing the playlist");
+          window.location.reload();
         }
     }
   }
+
+  useEffect(() => {
+    console.log("currentSongIndex testing",currentSongIndex)
+    updateTrack(currentSongIndex)
+  },[currentSongIndex])
+  useEffect(() => {
+    if(currentTrack)
+      updateButton(currentTrack)
+  },[isPlaying])
+
   function updateButton(track: Track) {
     let currentButton;
     if (currentTrack && currentTrack._id === track._id) {
-      currentButton = !isPlaying ? (
-        <Pause className="size-6" />
+      currentButton = isPlaying ? (
+        pauseButton
       ) : (
-        <Play className="size-6" />
+        playButton
       );
     } else {
-      currentButton = <Pause className="size-6" />;
+      currentButton = pauseButton;
     };
     setButton(currentButton);
   }
@@ -116,16 +117,9 @@ export default function AudioPlayer({
   }
   return (
     <div
-      className={`flex flex-col h-screen overflow-y-hidden  bg-cover bg-center bg-white`}
+      className={`h-screen bg-cover bg-center bg-white flex flex-col gap-2`}
     >
-      
-     
-      <div
-        className={clsx({
-          "min-h-[30%]": isLibraryOpen,
-          "min-h-[60%]": !isLibraryOpen,
-        })}
-      >
+      <div>
         <Card className={`border-none h-full flex flex-col gap-1`}>
           <CardHeader>
             <CardTitle className="text-lg  text-center tracking-widest uppercase text-xl">
@@ -134,7 +128,7 @@ export default function AudioPlayer({
           </CardHeader>
           <CardContent>
             <div className="mb-5 flex flex-col justify-end">
-              {!isLibraryOpen && (
+              
                 <Image
                   src={currentTrack && currentTrack.albumArt || "/bg.png"}
                   alt="album-art"
@@ -142,7 +136,7 @@ export default function AudioPlayer({
                   height={300}
                   className="self-center rounded-xl mb-5"
                 />
-              )}
+              
               <p className="text-md font-semibold mb-1 text-2xl">
                 {currentTrack &&  currentTrack.title}
               </p>
@@ -163,75 +157,35 @@ export default function AudioPlayer({
               <Button
                 className="size-[5rem] rounded-full"
                 variant="ghost"
+                onClick={() => handlePrev()}
               >
-              <StepBack size={24} className="size-8" />
+             {skipBackButton}
               </Button>
               <Button
                 className="size-[5rem] rounded-full"
-                onClick={() => handleButtonClick(currentTrack)}
+                
+                onClick={() => updateTrack(currentSongIndex)}
               >
                 {button}
               </Button>
               <Button
                 className="size-[5rem] rounded-full"
                 variant="ghost"
+                onClick={() => handleNext()}
               >
-              <StepForward size={24} className="size-8" />
+              {skipForwardButton}
               </Button>
             </div>
           </CardFooter>
         </Card>
       </div>
-      <div
-        className={clsx("border-none", {
-          "min-h-[60%]": isLibraryOpen,
-          "min-h-[5%]": !isLibraryOpen,
-        })}
-      >
-        <Collapsible
-          className="h-full group rounded-md overflow-y-hidden"
-          onOpenChange={() => setIsLibraryOpen(!isLibraryOpen)}
-        >
-          <CollapsibleTrigger asChild>
-            <Button
-              variant="outline"
-              size="lg"
-              className="text-md group w-full h-22 border-none bg-transparent shadow-none text-xl bg-card"
-            >
-              PLAYLIST
-              <ChevronDownIcon className="ml-auto group-data-[state=open]:rotate-180" />
-            </Button>
-          </CollapsibleTrigger>
-          <CollapsibleContent className="h-full overflow-y-scroll bg-card">
-            <div>
-              {songList &&
-                songList.map((track, index) => (
-                  <Item key={index} onClick={() => handleButtonClick(track)} 
-                  className={clsx(
-                      track._id === currentTrack?._id && "bg-accent"
-                  )}>
-                    <ItemMedia variant="icon">
-                      <Music />
-                    </ItemMedia>
-                    <ItemContent>
-                      <ItemTitle>{track.title}</ItemTitle>
-                      <ItemDescription>{track.movieName}</ItemDescription>
-                    </ItemContent>
-                    <ItemActions>
-                      <Button variant="ghost" className="">
-                        {currentTrack &&  track._id === currentTrack._id ? (
-                          button
-                        ) : (
-                          <Play className="size-6" />
-                        )}
-                      </Button>
-                    </ItemActions>
-                  </Item>
-                ))}
-            </div>
-          </CollapsibleContent>
-        </Collapsible>
-      </div>
+     <AudioPlaylist 
+     songList={songList}
+     currentTrack={currentTrack}
+     button={button}
+     playButton={playButton}
+     
+     />
     </div>
   );
 }

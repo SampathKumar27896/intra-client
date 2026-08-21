@@ -29,7 +29,7 @@ export default function RootLayout({
   return (
     <html>
         <body
-          className={`${geistSans.variable} ${geistMono.variable} antialiased md:p-6 lg:p-8 mb-[10rem]`}
+          className={`${geistSans.variable} ${geistMono.variable} antialiased md:p-6 lg:p-8`}
         >
           <Toaster position="top-center"/>
           <Suspense fallback={<Loading/>}>

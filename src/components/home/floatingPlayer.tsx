@@ -26,7 +26,6 @@ export function FloatingPlayer() {
     if(currentTrack)
       handleAction(currentTrack);
   }
-  console.log(currentTrack)
   return (
     <div>
       { pathName !== '/player' && currentTrack?.fileUrl && 
