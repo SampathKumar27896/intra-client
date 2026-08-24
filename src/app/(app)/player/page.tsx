@@ -1,9 +1,9 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import  AudioPlayer  from "@/components/audioPlayer/audioplayer";
-import useSWR from "swr";
+
 import { dataGetter } from "../../api/fetcher";
-import { Track } from "@/app/types"
+
 import useAudioStore from '../../../store';
 import useSWRImmutable from 'swr/immutable';
 export default function Player() {
@@ -24,7 +24,7 @@ export default function Player() {
         console.log("current track already there")
       }
     }
-  }, [data?.songList, isLoading])
+  }, [data, isLoading])
   
   return (
     <div>

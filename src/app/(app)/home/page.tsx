@@ -1,10 +1,6 @@
 'use client';
 import * as React from 'react';
-import {
-  Card,
-} from "@/components/ui/card";
 import Image from "next/image";
-import { Bell, Settings } from 'lucide-react';
 import { Search } from "lucide-react"
 
 import {
@@ -46,24 +42,7 @@ export default function Page() {
       name: "Shankar Mahadevan"
     }
   ]
-  const collection = [
-    {
-      id: "1",
-      url: "https://picsum.photos/200",
-      name: "Vocals"
-    },
-    {
-      id: "2",
-      url: "https://picsum.photos/200",
-      name: "Mashups"
-    },
-    {
-      id: "3",
-      url: "https://picsum.photos/200",
-      name: "Sam's favs"
-    },
-   
-  ]
+  
   return (
        <div>
        <div id="head" className="mt-5 mx-4 flex flex-row justify-between bg-background p-2 rounded-md border">

@@ -16,7 +16,6 @@ import useAudioStore from '../../store';
 export function FloatingPlayer() {
   const pathName = usePathname();
   const currentTrack = useAudioStore((state) => state.currentTrack);
-  const duration = useAudioStore((state) => state.duration);
   const isPlaying = useAudioStore((state) => state.isPlaying);
   const handleAction = useAudioStore((state) => state.handleAction);
   const playButton = <Play fill={"#ffff"} color={"#ffff"} size={22}/>;
