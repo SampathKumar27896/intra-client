@@ -10,22 +10,20 @@ import { Button } from "@/components/ui/button";
 import {
   Play,
   Pause,
-  Music,
   SkipForward,
   SkipBack,
 } from "lucide-react";
 
-import { Track, AudioPlayerProps, TypeGetSongResponse } from "@/app/types";
+import { TypeGetSongResponse } from "@/app/types";
 import Image from "next/image";
 import { toast } from 'sonner';
 
 import useSWRMutation from "swr/mutation";
-import useAudioElement from './useAudioElementHook'
 import fetcher from "@/app/api/fetcher";
 import useAudioStore from '../../store';
 import AudioSlider from './audioSlider';
 import AudioPlaylist from './audioPlaylist'
-import { useRouter } from 'next/navigation'
+
 
 export default function AudioPlayer() {
   const currentTime = useAudioStore((state) => state.currentTime);
@@ -42,23 +40,20 @@ export default function AudioPlayer() {
   const skipForwardButton = <SkipForward size={28}  fill="#000" className="size-8"/>;
   const skipBackButton =  <SkipBack size={28} fill="#000" className="size-8" />
   const [button, setButton] = useState(!isPlaying ? playButton: pauseButton);
-  console.log("songl  list",songList)
   const { trigger } = useSWRMutation<
     TypeGetSongResponse,
     unknown,
     string,
     { songId: string }
   >("audio/getSong", fetcher);
-  
-  const {
    
-    audioRef
-  } = useAudioElement(); 
    
 
  const handleNext = () => {
+    console.log(songList, currentSongIndex)
     if (!songList || songList.length === 0) return;
     const newIndex = ((currentSongIndex + 1) % songList.length);
+
     setCurrentSongIndex(newIndex);
   };
 
@@ -86,27 +81,22 @@ export default function AudioPlayer() {
   }
 
   useEffect(() => {
-    console.log("currentSongIndex testing",currentSongIndex)
-    updateTrack(currentSongIndex)
-  },[currentSongIndex])
-  useEffect(() => {
-    if(currentTrack)
-      updateButton(currentTrack)
+    const currentTrack = useAudioStore.getState().currentTrack; 
+    if(currentTrack) {
+      let currentButton;
+      if (currentTrack && currentTrack._id === currentTrack._id) {
+        currentButton = isPlaying ? (
+          pauseButton
+        ) : (
+          playButton
+        );
+      } else {
+        currentButton = pauseButton;
+      };
+      setButton(currentButton);
+    }
   },[isPlaying])
 
-  function updateButton(track: Track) {
-    let currentButton;
-    if (currentTrack && currentTrack._id === track._id) {
-      currentButton = isPlaying ? (
-        pauseButton
-      ) : (
-        playButton
-      );
-    } else {
-      currentButton = pauseButton;
-    };
-    setButton(currentButton);
-  }
   function formatTime(time: number) {
     if (!time) return "0:00";
 
@@ -147,7 +137,6 @@ export default function AudioPlayer() {
               </div>
               <AudioSlider 
                 duration={duration}
-                audioRef={audioRef}
                 currentTime={currentTime}
               />
             </div>

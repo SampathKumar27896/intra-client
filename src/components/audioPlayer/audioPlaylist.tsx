@@ -39,7 +39,7 @@ export default function AudioPlaylist({
     playButton: JSX.Element
     // handleButtonClick: (track: Track | null) => Promise<void>
 }) {
-    const setCurrentSongIndex = useAudioStore((state) => state.setCurrentSongIndex)
+    const handleAction = useAudioStore((state) => state.handleAction);
     return (
         <div className="w-full">
             <Sheet key={"bottom"}>
@@ -64,7 +64,7 @@ export default function AudioPlaylist({
                                     songList.map((track, index) => (
                                         <Item key={index} onClick={() => {
                                             // handleButtonClick(track);
-                                            setCurrentSongIndex(index);
+                                            handleAction(track);
                                         }}
                                             className={clsx(
                                                 track._id === currentTrack?._id && "bg-accent"
