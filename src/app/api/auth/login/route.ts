@@ -40,9 +40,9 @@ export async function POST(request: Request) {
       statusCode: data?.statusCode || 200,
       data: data?.data,
     });
-  } catch (error: any) {
+  } catch (error: unknown) {
     return NextResponse.json(
-      { message: error?.message || 'Internal Server Error' },
+      { message: (error instanceof Error)? error?.message : 'Internal Server Error' },
       { status: 500 }
     );
   }
