@@ -1,11 +1,6 @@
-"use client";
+// app/page.tsx
+import { redirect } from 'next/navigation';
 
-export default function Home() {
-  
-  
-  return (
-    <div>
-     Nothing found
-    </div>
-  );
+export default function RootPage() {
+  redirect('/home');
 }
