@@ -44,9 +44,9 @@ async function handleProxy(request: Request, { params }: { params: Promise<{ pat
 
     // 7. Return response directly to frontend client
     return NextResponse.json(data, { status: backendRes.status });
-  } catch (error: any) {
+  } catch (error: unknown) {
     return NextResponse.json(
-      { message: error?.message || 'Internal Proxy Error' },
+      { message: (error instanceof Error)?  error?.message : 'Internal Proxy Error' },
       { status: 500 }
     );
   }
